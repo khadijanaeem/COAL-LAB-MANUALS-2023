@@ -1,0 +1,71 @@
+; red rectangle
+[org 0x0100]
+jmp start
+clrscr: 
+	push es
+	push ax
+	push di
+	mov ax, 0xb800
+	mov es, ax 
+	mov di, 0 
+	nextloc: 
+		mov word [es:di], 0x0720 
+		add di, 2 
+		cmp di, 4000 
+		jne nextloc 
+	
+	pop di
+	pop ax
+	pop es
+	ret
+
+rect:
+	push es
+	push ax
+	push si
+	push di
+
+	mov ax, 0xb800
+	mov es, ax 
+	mov di, 340
+	mov al ,' '
+mov ah,0x47
+	
+nextchar: 
+	mov [es:di], ax 
+	add di, 2 
+cmp di , 440
+jbe nextchar
+	
+l1:
+	mov [es:di], ax 
+	add di, 160
+	cmp di , 3320
+	jbe l1
+	ja l2
+l2:
+	
+	mov [es:di], ax 
+	sub di,2
+	cmp di , 3220
+	ja l2
+	jbe l3
+l3:
+	
+	mov [es:di], ax 
+	sub di,160
+	cmp di , 340
+	ja l3
+
+	pop di
+	pop si
+	pop ax
+	pop es
+	ret 4
+start:
+call clrscr
+call rect
+	
+terminate:
+mov ax, 0x4c00 
+int 0x21
