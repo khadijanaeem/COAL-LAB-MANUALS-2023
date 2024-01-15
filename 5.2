@@ -1,0 +1,64 @@
+[org 0x0100]
+jmp start
+array1: dw 1,2,3,4
+array2:dw 5,6,7,8
+size:dw 4
+start:
+push  array1
+push  array2
+push  size
+call multiplication
+jmp end
+
+multiplication:
+push bp
+push ax
+push bx
+push si
+push di
+push cx
+mov bp,sp
+
+mov bx,[bp+8]
+mov dx,[bp+6]
+mov cx,[bp+4]                   
+dec cx                        shr cx,1
+
+mov si,0
+mov di,0
+innerloop:
+call multiply
+add si,2
+add di,2
+cmp si,cx
+jne innerloop
+je l2
+l2: pop cx
+    pop di
+    pop si
+    pop bx
+    pop ax
+    pop bp
+ret 4
+
+multiply:
+sub sp,2
+push bx
+push dx
+push cx
+mov cx,8
+check: shr dx,1
+jnc skip
+add [bp-2],bx
+skip: shl bx,1
+dec cx
+jnz check
+je l3
+l3:pop cx
+pop dx
+pop bx
+mov sp,bp
+ret 4
+ 
+end:mov ax,0x4c00
+int 21h
