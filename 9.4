@@ -1,0 +1,99 @@
+[org 0x0100]
+ jmp main
+oldisr: dd 0 
+buffer: times 2000 dw 0 
+
+m1: db 'Key A is pressed '
+m2: db 'Key A is released'
+
+clrscr:
+push es
+push ax
+push di
+mov ax, 0xb800
+mov es, ax
+mov di, 0
+nextchar:
+mov word [es:di], 0x720
+add di, 2
+cmp di, 4000
+jne nextchar
+pop di
+pop ax
+pop es
+ret
+
+printstr: push bp
+mov bp, sp
+push es
+push ax
+push cx
+;push si
+push di
+mov ax, 0xb800
+mov es, ax 
+mov di,0
+
+mov cx, 13
+mov ah, 0x01
+cld 
+nextchar1: 
+mov al,[si]
+mov [es:di],ax
+add di,2
+add si,1
+loop nextchar1 
+pop di
+;pop si
+pop cx
+pop ax
+pop es
+pop bp
+ret 
+
+kbISR:
+push ax
+in al, 0x60 
+cmp al, 00011101b ; snap code of ctrl == 29
+JNE nextCmp
+mov si,m1
+CALL printstr
+jmp exit
+
+nextCmp:
+cmp al, 10011101b
+JNE noMatch
+mov si,m2
+CALL printstr 
+
+jmp exit
+
+noMatch:
+pop ax
+jmp far [cs:oldisr] 
+exit:
+mov al, 0x20 ;  EOI
+out 0x20, al
+pop ax
+iret
+
+main:
+xor ax, ax
+mov es, ax
+
+mov ax, [es:9*4]
+mov [oldisr], ax
+mov ax, [es:9*4+2]
+mov [oldisr+2], ax
+
+cli
+mov word [es:9*4], kbISR
+mov [es:9*4+2], cs
+sti
+
+mov dx, main
+add dx, 15
+mov cl, 4
+shr dx, cl
+mov ax, 0x3100
+INT 0x21
