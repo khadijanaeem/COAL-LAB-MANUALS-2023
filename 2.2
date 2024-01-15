@@ -1,0 +1,21 @@
+;lab2task2code
+[org 0x0100]
+;code
+Mov ax, [num1] ;0A0B
+Mov ax, [num2]   ;0E0D
+Mov ax, [num2+2] ;0C0D
+Mov ax, [num2+1] ;0D0E
+Mov al, [num2+3] ;0D0C    al=0C
+Mov ah, [num1]    ;0B0C    ah= 0B
+Mov ax, [array1] ;0102     
+Mov ax, [array1+2]  ;0304  
+Mov al, [array2]    ; 0305   al =05
+Mov al, [array2+1] ;0306   al =06
+Mov ax, [array2] ;0605  
+mov ax, 0x4c00 ;4C00
+int 21h
+
+num1: dw 0A0Bh
+num2: dd 0C0D0E0Dh
+array1: dw 0102h , 0304h
+array2: db 05h , 06h, 07h
