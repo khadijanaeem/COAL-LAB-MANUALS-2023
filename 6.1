@@ -1,0 +1,83 @@
+[org 0x100]
+
+jmp start
+
+message: db '22L-6601'
+length: dw 8
+
+clrsrc:
+push es
+push ax
+push di
+mov ax, 0xb800
+mov es,ax
+mov di,0
+
+nextloc:
+mov word[es:di],0x0320   ; red color and a space
+add di, 2
+cmp di,4000
+jne nextloc
+
+pop di
+pop ax
+pop es
+ret
+
+printstr:
+push bp
+mov bp,sp
+push es
+push ax
+push bx
+push cx
+push si
+push di
+
+mov ax, 0xb800
+mov es,ax
+mov al,80
+mul byte[bp+8]
+add ax,[bp+10]
+shl ax,1
+mov di,ax
+mov si,[bp+6]
+mov cx,[bp+4]
+;mov ah,[bp+8]
+mov ah,0x42   ; red background with green foreground
+mov bx,cx
+shl bx,1
+add di,bx    
+shr bx,1
+
+nextchar:
+mov al,[si]
+mov [es:di],ax
+sub di,2
+add si,1
+loop nextchar
+
+pop di
+pop si
+pop cx
+pop bx
+pop ax
+pop es
+pop bp
+ret 8
+
+start:
+call clrsrc
+mov ax, 40
+push ax
+mov ax, 12
+push ax
+;mov ax, 1
+;push ax
+mov ax, message
+push ax
+push word[length]
+call printstr
+
+mov ax,0xc400
+int 0x21
