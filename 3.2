@@ -1,0 +1,38 @@
+[org 0x100]
+jmp start
+num: db 3,2,9,5,6,7,8,0,1,2
+small: db 0
+large: db 0
+start:
+mov al,[num]
+mov ah,[num]
+mov bx,0
+mov si,0
+
+l1: add bx,1
+cmp bx , 10
+je l3
+cmp ah, [num+bx]
+ja l1
+jb l2
+l2: mov ah, [num+bx]
+mov [large],ah
+cmp bx , 9
+je l3
+jmp l1
+
+l3: add si,1
+cmp si, 10
+je end
+cmp al,[num+si]
+jb l3
+ja l4
+l4:
+mov al, [num+si]
+mov [small],al
+cmp si,9
+je end
+jmp l3
+end:
+mov ax, 0x4c00
+int 0x21
