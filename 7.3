@@ -1,0 +1,151 @@
+[org 0x0100]
+jmp start
+string: db 'Hello world student',0
+substring: db 'world',0
+ypos: dw 20
+xpos: dw 30
+clrscr:
+ push es
+push ax
+push cx
+push di
+mov ax, 0xb800
+mov es, ax 
+xor di, di 
+mov ax, 0x0720 
+mov cx, 2000 
+cld 
+rep stosw 
+pop di
+pop cx
+pop ax
+pop es
+ret
+strlen: 
+push bp
+mov bp,sp
+push es
+push cx
+push di
+les di, [bp+4] 
+mov cx, 0xffff 
+xor al, al 
+repne scasb 
+mov ax, 0xffff 
+sub ax, cx 
+dec ax 
+pop di
+pop cx
+pop es
+pop bp
+ret 4
+strcmp:
+push bp
+mov bp,sp
+push ax
+push bx
+push cx
+push dx
+push si
+push di
+push es
+push ds
+lds si,[bp+4]
+les di,[bp+8]
+push ds
+mov ax,[bp+8]
+push ax
+call strlen
+mov bx,ax
+push ds
+mov ax,[bp+4]
+push ax
+call strlen
+mov cx,ax
+push bx
+l1:
+push di
+repe cmpsb
+jcxz found
+pop di
+inc di
+mov si,[bp+4]
+mov cx,ax
+dec bx
+jnz l1
+jz notfound
+notfound:
+pop bx
+mov dx,di
+mov cx, bx
+mov ax, 0xb800
+mov es, ax
+mov al, 80 
+mul byte [ypos] 
+add ax, [xpos] 
+shl ax, 1 
+mov di,ax 
+mov si, [bp+8] 
+mov ah, 0x07 
+cld 
+nextchar: 
+	lodsb 
+	stosw 
+	loop nextchar
+jmp exit
+found:
+pop di
+pop bx
+mov dx,di
+mov cx, bx ; save length in cx
+mov bx,dx
+add bx,ax
+dec bx
+mov ax, 0xb800
+mov es, ax 
+mov al, 80 
+mul byte [ypos]
+add ax, [xpos]
+shl ax, 1 
+mov di,ax
+mov si, [bp+8] 
+mov ah, 0x07 
+cld
+nextchar1:
+cmp si,dx
+jl nohighlight 
+cmp si,bx
+jg nohighlight
+highlight:
+mov ah, 0x4E
+next:
+lodsb
+stosw 
+loop nextchar1 
+jcxz exit
+nohighlight:
+mov ah,0x07
+jmp next
+		
+exit: 
+pop ds
+pop es
+pop di
+pop si
+pop dx
+pop cx
+pop bx
+pop ax
+pop bp
+ret 8
+start:
+call clrscr
+push ds
+mov ax,string
+push ax
+push ds
+mov ax,substring
+push ax
+call strcmp
+mov ax,0x4c00
+int 0x21
