@@ -1,0 +1,29 @@
+[org 0x0100]
+mov ax,42
+mov bx,18
+mov cx,30
+
+cmp ax,bx 
+ja label1
+cmp ax,cx
+ja label2
+mov [smallest],ax
+jmp end
+
+label2: mov [smallest],cx
+jmp end
+
+label1:
+cmp bx,cx
+ja label3
+mov [smallest],bx
+jmp end
+
+label3: mov [smallest] ,cx
+jmp end
+n1
+end: mov ax, 0xc400
+int 21h
+
+
+smallest: dw 0
