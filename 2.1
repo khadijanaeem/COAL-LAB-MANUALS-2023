@@ -1,0 +1,14 @@
+; lab2Task1code
+[org 0x0100]
+; no code because we just want to look
+; at how data is stored in memory
+mov ax, 0x4c00 ; termination statements
+int 21h
+; data declaration
+Num1: dd 0A0B0C0Dh   ; 0D is at 0105 0C is at 0106 0B is at 0107 0A is at 0108 address in memory 
+Num2: dw 0102h     ;02 is at 0109 , 01 is at 010A 
+Num3 db 33h          ; 33 is at 010B 
+Nums: dw 3456h     ; 56  is at 010C 34 is at 010D
+db 99h            ;99 is at 010E 
+
+my_array: dw 0E0Fh, 0506h, 0708h, 0910h
