@@ -1,0 +1,68 @@
+[org 0x0100]  
+jmp start 
+string: db 'ggggdddddddyyyyakxxxuuww',0 
+result: db 0,0,0,0,0,0,0,0   
+
+clrscr: 
+	push es
+	push ax
+	push di
+	mov ax, 0xb800
+	mov es, ax 
+	mov di, 0 
+	next: 
+		mov word [es:di], 0x0720 
+		add di, 2 
+		cmp di, 4000 
+		jne next
+	
+	pop di
+	pop ax
+	pop es
+	ret
+
+
+
+start: 
+call clrscr
+
+mov ax, ds 
+mov es, ax 
+mov di, string  
+mov bx,0
+l1: 
+mov al,[di] 
+mov cx,10 
+repe scasb 
+cmp cx,9 
+je unique
+mov [result+bx],al
+notunique:
+inc bx 
+cmp byte [di],0 
+je end
+jmp l1
+
+unique:
+mov dx, [di-1]
+mov [result+bx], dx
+jmp notunique
+
+end:
+mov bp,0 
+mov ax,0xb800
+mov es,ax
+mov di, 0 
+next1: 
+mov al,[result+bp] 
+mov ah, 0x07
+mov word [es:di], ax 
+add di,2 
+add bp,1 
+cmp bp,8 
+je end2
+jmp next1 
+
+end2: 
+mov ax, 0x4c00 
+int 0x21
