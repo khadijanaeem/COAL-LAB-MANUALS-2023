@@ -1,0 +1,27 @@
+[org 0x0100]
+mov ax,[fib]
+mov bx,[fib+2]
+add ax,bx
+mov [fib+4],ax
+add bx,[fib+4]
+mov [fib+6],bx
+
+add ax,bx
+mov [fib+8],ax
+add bx,[fib+8]
+mov [fib+10],bx
+
+add ax,bx
+mov [fib+12],ax
+add bx,[fib+12]
+mov [fib+14],bx
+
+add ax,bx
+mov [fib+16],ax
+add bx,[fib+16]
+mov [fib+18],bx
+
+mov ax,0x4c00
+int 0x21
+
+fib:dw 0,1,0,0,0,0,0,0,0,0
