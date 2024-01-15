@@ -1,0 +1,18 @@
+[org 0x0100] 
+mov ax,[num]
+mov bx,4
+add ax,[num]
+add ax,[num]
+add ax,[num]
+add ax,[num]
+mov [mresult],ax
+sub ax,bx
+sub ax,bx
+sub ax,bx
+sub ax,bx
+mov [dresult],ax
+mov ax, 0x4c00 
+int 0x21
+num:dw 6
+mresult:dw 0
+dresult:dw 0
