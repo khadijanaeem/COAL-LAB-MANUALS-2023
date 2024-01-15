@@ -1,0 +1,9 @@
+[org 0x0100]
+mov ax, [22]
+mov [02], ax
+mov byte [wordvar], 20
+mov bx, ax
+mov ax, [bx+di+100]
+wordvar : db 10
+mov ax, 0x4c00
+int 21h
