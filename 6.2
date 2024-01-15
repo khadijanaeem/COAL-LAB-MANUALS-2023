@@ -1,0 +1,160 @@
+; hello world in assembly
+[org 0x0100]
+jmp start
+m1: db 'hello world'
+m2: db 'hello hello again'
+l1: dw 11 
+l2: dw 17
+
+ key_pressed: db 1 
+clrscr: 
+	push es
+	push ax
+	push di
+	mov ax, 0xb800
+	mov es, ax 
+	mov di, 0 
+	nextloc: 
+		mov word [es:di], 0x0720 
+		add di, 2 
+		cmp di, 4000 
+		jne nextloc 
+	
+	pop di
+	pop ax
+	pop es
+	ret
+
+printstr: 
+	push bp
+	mov bp, sp
+	push es
+	push ax
+	push cx
+	push si
+	push di
+	mov ax, 0xb800
+	mov es, ax 
+	mov al, 80 
+	mul byte [bp+10] 
+	add ax, [bp+12] 
+	shl ax, 1 
+	mov di,ax
+	mov si, [bp+6] 
+	mov cx, [bp+4] 
+	mov ah, [bp+8] 
+nextchar: 
+	mov al, [si]
+	mov [es:di], ax 
+	add di, 2 
+	add si, 1 
+	loop nextchar 
+	
+	pop di
+	pop si
+	pop cx
+	pop ax
+	pop es
+	pop bp
+	ret 10 
+	
+
+
+
+
+swap:
+	push bp
+	mov bp, sp
+	push es
+	push ax
+	push cx
+	push si
+	push di
+	mov ax, 0xb800
+	mov es, ax 
+	mov al, 80 
+	mul byte [bp+10] 
+	add ax, [bp+12] 
+	shl ax, 1 
+	cmp ax, 1850
+ja loop2
+jb loop3
+loop3:
+	add ax,1850
+jmp l4
+loop2:
+	sub ax, 1850
+l4:
+	mov di,ax
+	mov si, [bp+6] 
+	mov cx, [bp+4] 
+	mov ah, [bp+8] 
+nextchar2: 
+	mov al, [si]
+	mov [es:di], ax 
+	add di, 2 
+	add si, 1 
+	loop nextchar2 
+	
+	pop di
+	pop si
+	pop cx
+	pop ax
+	pop es
+	pop bp
+	ret 10 
+	
+start: 
+      call clrscr 
+	  mov ax,1
+	  push ax
+	  mov ax,1
+	  push ax
+	  mov ax,1
+	  push ax
+      mov ax, m1
+      push ax 
+      push word [l1] 
+      call printstr
+  	
+	  mov ah,0x01
+	  mov ax, 79
+	  push ax 
+	  mov ax, 12
+	  push ax 
+	  mov ax, 1
+	  push ax
+	  mov ax,m2
+	  push ax
+	  push word [l2]
+	  call printstr
+         
+
+ mov ah,0x01
+	  mov ax, 79
+	  push ax 
+	  mov ax, 12
+	  push ax 
+	  mov ax, 1
+	  push ax
+	  mov ax,m2
+	  push ax
+	  push word [l2]
+call swap
+ 	
+  mov ax,1
+	  push ax
+	  mov ax,1
+	  push ax
+	  mov ax,1
+	  push ax
+      mov ax, m1
+      push ax 
+      push word [l1] 
+call swap
+
+    
+	
+terminate:
+mov ax, 0x4c00 
+int 0x21
