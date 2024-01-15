@@ -1,0 +1,21 @@
+[org 0x100]
+start:
+mov cl,32
+mov dx,[multiplier]
+checkbit:
+shr dx,1
+jnc skip
+mov ax,[multiplicand]
+add [result],ax
+mov ax,[multiplicand+2]
+adc [result+2],ax
+skip:
+shl qword [multiplicand],1
+rcl qword [multiplicand+2],1
+dec cl
+jnz checkbit
+mov ax, 0x4c00
+int 0x21
+multiplicand: dq 0xABCDD4E1
+multiplier: dd 0xAB5C32
+result: dq 0
