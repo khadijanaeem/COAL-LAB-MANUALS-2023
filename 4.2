@@ -1,0 +1,38 @@
+[org 0x100]
+jmp start:
+mov dx,0
+mov cx,1     
+mov si,0
+
+start:
+test [num1],cx
+jz label1
+jnz  label2
+
+label1:
+test [num2],cx
+jz counter
+jnz label3
+
+label2:
+test [num2],cx
+jnz counter
+jz label3
+
+label3:
+mov dx,0
+jmp end 
+
+counter:
+add si,1
+mov dx,1
+shl cx,1
+cmp si,16
+jne start
+
+mov dx,1
+end:
+mov ax, 0x4c00
+int 0x21
+num1: dw 123
+num2: dw 123
