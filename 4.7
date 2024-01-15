@@ -1,0 +1,8 @@
+AX=0x5CAA DX=0x3729 CX=0x235A
+
+Instructions     al        dl        cl       CF     OF        SF
+xor al,dl        83        29        5A       0       0         1
+add dl,dl        83        52        5A       0       0         0
+sub cl,dl        83        52        08       0       0         0
+sar al,cl        FF        52        08       1       0         1
+adc al,dl        52        52        08       1       1         0
