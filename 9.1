@@ -1,0 +1,132 @@
+[org 0x100]
+jmp start 
+msg1: dw 'I am going crazy',0
+msg2: dw 'But this is fun',0
+msg3: dw 'Nevermind',0
+msg4: dw 'I wanna go home',0
+
+clrscr:
+mov ax, 0xb800
+mov es,ax
+mov di,0
+next: 
+mov word [es:di], 0x0720
+add di,2
+cmp di, 4000
+jne next
+ret
+
+strlen:
+ push bp
+ mov bp,sp
+ push es
+ push cx
+ push di
+ les di, [bp+4] 
+ mov cx, 0xffff
+ xor al, al 
+ repne scasb 
+ mov ax, 0xffff 
+ sub ax, cx 
+ dec ax
+ pop di
+ pop cx
+ pop es
+ pop bp
+ ret 4
+
+printstr: push bp
+ mov bp, sp
+ push es
+ push ax
+ push cx
+ push si
+ push di
+ push ds 
+ mov ax, [bp+4]
+ push ax 
+ call strlen 
+cmp ax, 0 
+ jz exit 
+ mov cx, ax 
+ mov ax, 0xb800
+ mov es, ax 
+ mov al, 80 
+ mul byte [bp+8] 
+ add ax, [bp+10] 
+ shl ax, 1 
+ mov di,ax 
+ mov si, [bp+4] 
+ mov ah, [bp+6] 
+ cld 
+nextchar:
+ lodsb 
+ stosw 
+ loop nextchar 
+
+exit: pop di
+ pop si
+ pop cx
+ pop ax
+ pop es
+ pop bp
+ ret 8 
+
+
+start:
+ mov ah, 0x10 
+ mov al, 03 
+ mov bl, 01 
+ int 0x10 
+ mov ah, 0 
+ int 0x16 
+ call clrscr 
+
+ mov ah, 0 
+ int 0x16 
+ mov ax, 0
+ push ax
+ mov ax, 0
+ push ax 
+ mov ax, 0x71
+ push ax 
+ mov ax, msg1
+ push ax 
+ call printstr 
+
+ mov ah, 0 
+ int 0x16 
+ mov ax, 3
+ push ax 
+ mov ax, 3
+ push ax 
+ mov ax, 0x71 
+ push ax 
+ mov ax, msg2
+ push ax 
+ call printstr 
+ mov ah, 0 
+ int 0x16 
+ mov ax, 4
+ push ax 
+ mov ax, 4
+ push ax 
+ mov ax, 0x71
+ push ax 
+ mov ax, msg3
+ push ax 
+ call printstr 
+ mov ah, 0 
+ int 0x16 
+mov ax, 5
+ push ax 
+ mov ax, 5
+ push ax 
+ mov ax, 0x71 
+ push ax 
+ mov ax, msg4
+ push ax 
+ call printstr 
+
+ mov ax, 0x4c00 
+ int 0x21 
