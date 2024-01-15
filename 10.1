@@ -1,0 +1,174 @@
+[org 0x0100] 
+buffer: times 80 dw 0 
+buffer1: times 2000 dw 0 
+jmp start  
+
+scrollup: push bp 
+mov bp,sp 
+push ax 
+push cx 
+push si 
+push di 
+push es 
+push ds 
+mov ax, 80 
+mul byte [bp+4] 
+mov si, ax 
+push si 
+shl si, 1 
+mov cx, 2000 
+sub cx, ax 
+mov ax, 0xb800 
+mov es, ax 
+mov ds, ax 
+xor di, di 
+cld  
+rep movsw 
+mov ax, 0x0720 
+pop cx 
+rep stosw 
+pop ds 
+pop es 
+pop di 
+pop si 
+pop cx 
+pop ax 
+pop bp 
+ret 2 
+
+ storebuffer:
+push bp
+mov bp, sp
+push ax
+push cx
+push si
+push di
+push es
+push ds
+mov ax, 0xb800
+mov ds, ax
+mov si, 0
+mov ax, cs
+mov es, ax
+mov di, buffer
+mov cx, 80
+cld
+rep movsw 
+pop ds
+pop es
+pop di
+pop si
+pop cx
+pop ax
+pop bp
+ret
+load_buffer:
+push bp
+mov bp, sp
+push ax
+push cx
+push si
+push di
+push es
+push ds
+mov ax, 0xb800 
+mov es, ax
+mov ax, cs
+mov ds, ax
+mov si, buffer
+mov cx, 80
+cld
+rep movsw 
+pop ds
+pop es
+pop di
+pop si
+pop cx
+pop ax
+pop bp
+ret
+ delay:
+
+mov cx,0xffff
+l1:
+loop l1
+mov cx,0xffff
+l2:
+loop l2
+ret
+
+
+storebuffer1:
+push bp
+mov bp, sp
+push ax
+push cx
+push si
+push di
+push es
+push ds
+mov ax, 0xb800 ; points to video memory
+mov ds, ax
+mov si, 0
+mov ax, cs
+mov es, ax
+mov di, buffer1
+mov cx, 2000
+cld
+rep movsw ; move data from video memory to buffer
+pop ds
+pop es
+pop di
+pop si
+pop cx
+pop ax
+pop bp
+ret
+load_buffer1:
+push bp
+mov bp, sp
+push ax
+push cx
+push si
+push di
+push es
+push ds
+mov ax, 0xb800 ; points to video memory
+mov es, ax
+mov di, 0
+mov ax, cs
+mov ds, ax
+mov si, buffer1
+mov cx, 2000
+cld
+rep movsw ; load buffer in video memory
+pop ds
+pop es
+pop di
+pop si
+pop cx
+pop ax
+pop bp
+ret
+start: 
+
+call storebuffer1
+ call delay
+ call delay
+ xor cx,cx
+ mov cx,5
+ l1:
+ mov ax,1 
+ push ax ; push number of lines to scroll 
+ call storebuffer
+ call scrollup ; call the scroll up subroutine 
+ call load_buffer
+ call delay
+ 
+ sub cx,1
+ cmp cx,0
+ jbe l11
+ ja l1
+ l11:call load_buffer1
+ mov ax, 0x4c00 ; terminate program 
+ int 0x21
