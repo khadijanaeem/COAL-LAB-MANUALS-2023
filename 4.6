@@ -1,0 +1,11 @@
+[org 0x100]
+
+mov ax,0x6601
+mov bx,ax
+or bx,ax
+xor ax, 0x1BCD
+and ax,bx
+mov word [f],ax
+mov ax,0x4c00
+int 0x21
+f: dw 0
