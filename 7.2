@@ -1,0 +1,99 @@
+[org 0x100]
+jmp start
+r1: dw 7
+r2: dw 15
+char: db 0x25
+
+clrscr:
+push es
+push ax
+push di
+mov ax, 0xb800
+mov es,ax
+mov di,0
+nextloc:
+mov word[es:di],0x0720
+add di,2
+cmp di,4000
+jne nextloc
+pop di
+pop ax
+pop es
+ret
+
+printstr:
+push bp
+mov bp,sp
+push es
+push ax
+push cx
+push si 
+push di
+push dx
+push bx
+
+mov ax,0xb800
+mov es,ax
+
+mov ax, [bp+8] ;r1
+;pos of 1st char
+mov bx, 160
+mul bx   
+add ax,80
+mov di,ax
+
+mov ax,0
+
+mov si,[bp+4]     ;char
+mov al,[si]  ;error
+
+mov dx,[bp+6]    ;r2
+mov cx, dx
+sub dx, [bp+8] 
+mov cx, dx     ;8
+mov ah ,0x07
+
+centre:
+mov [es:di],ax
+add di,162
+loop centre
+
+
+mov cx, dx
+shl cx,1
+lastline:
+
+mov [es:di],ax
+sub di,2
+loop lastline
+
+mov cx, dx  ; 8
+add cx,1
+leftline:
+mov [es:di],ax
+sub di,158
+loop leftline
+
+pop bx
+pop dx
+pop di 
+pop si
+pop cx
+pop ax
+pop es
+pop bp 
+ret 6
+
+
+start:
+call clrscr
+mov ax,[r1]
+push ax
+mov ax,[r2]
+push ax
+
+push char
+
+call printstr
+mov ax,0x4c00
+int 0x21
