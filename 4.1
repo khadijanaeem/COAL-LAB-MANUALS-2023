@@ -1,0 +1,25 @@
+[org 0x100]
+mov bx, [num]
+mov ax, [num2]      
+
+mov cx,0      
+start:
+shr bx, 1        
+jnc label       ;if CF is 0
+inc cx          ;if CF =1
+label:
+test bx, bx      ; Check if bx is 0
+jnz start
+
+mov si, cx   
+mov dx, 0x0001
+label2: 
+xor ax, dx
+shl dx, 1        
+add si, -1       ; Decrement SI 
+jnz label2; 
+
+mov ax, 0x4c00  
+int 0x21
+num: dw 0xB189    ; Initial value
+num2: dw  0xABD5 
