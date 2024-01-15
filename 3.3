@@ -1,0 +1,40 @@
+[org 0x100]
+jmp start
+arr1: db 2,9,0,8,7
+arr2: db 3,5,6,0,8
+result : db 0,0,0
+
+start:
+mov si,0
+mov di,-1
+mov bx, -1
+mov ah,[arr1]
+mov ch,[arr2]
+
+l1:
+cmp di, 4
+je end
+add di,1
+mov ah,[arr1+di]
+
+mov bx,-1
+jmp l3
+
+l2: mov [result+si] , ah
+add si,1
+jmp l1
+
+l3:
+cmp bx,4 
+je l1
+add bx, 1
+mov ch, [arr2+bx]
+
+cmp ah,ch 
+je l2
+jne l3
+
+end: 
+mov ax, 0x4c00
+int 0x21
+
