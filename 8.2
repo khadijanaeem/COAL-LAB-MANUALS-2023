@@ -1,0 +1,89 @@
+[org 0x0100]
+jmp start
+
+clrscr:
+mov ax, 0xb800
+mov es,ax
+mov di,0
+next: 
+mov word [es:di], 0x0720
+add di,2
+cmp di, 4000
+jne next
+ret
+
+print:
+push bp
+mov bp,sp
+mov di, [bp+4]
+mov ax, 0xb800
+mov es,ax
+mov ah, 0x07
+mov al, 0x2A
+mov [es:di], ax
+pop bp
+ret
+
+customISRforINT80h:
+push bp
+mov bp, sp
+ cmp ah, 0x4b
+ je JmpLeft
+cmp ah, 0x48
+ je JmpUp
+ cmp ah, 0x50
+ je JmpDown
+ cmp ah, 0x4d
+ je JmpRight
+ 
+ 
+JmpUp:
+mov word [es:di], 0x0720
+sub di, 160
+push di
+call print
+jmp end3
+
+JmpDown:
+mov word [es:di], 0x0720
+add di, 160
+push di
+call print
+jmp end3
+
+
+JmpRight:
+mov word [es:di], 0x0720
+add di, 4
+push di
+call print
+jmp end3
+
+JmpLeft:
+mov word [es:di], 0x0720
+sub di, 4
+push di
+call print
+jmp end3
+
+end3:
+pop bp
+call Hok80h
+ret
+
+
+
+Hok80h:
+mov ah,0
+int 16h
+call customISRforINT80h
+ret
+
+start:
+call clrscr
+push word 2000
+call print
+call Hok80h
+
+mov ax, 0x4c00
+int 0x21
