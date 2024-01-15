@@ -1,0 +1,26 @@
+[org 0x100]
+mov ax, 78
+cmp ax,0 
+ja label1
+mov byte [classification],1
+jmp end
+
+label1:
+cmp ax, 25
+ja label2
+mov byte  [classification],2
+jmp end
+
+label2:
+cmp ax,70
+ja label3
+mov byte  [classification],3
+jmp end
+label3:
+mov byte [classification],4
+jmp end
+
+end: mov ax,0x4c00
+int 21h
+
+classification: db 0
