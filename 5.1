@@ -1,0 +1,90 @@
+[org 0x0100]
+mov cx,0;
+shr word [direction],1
+jc l2
+
+l1:
+mov bx,array
+push bx
+mov ax,[size]
+push ax
+call left
+jmp end
+add cx,1
+cmp cx,[rotation]
+jne l1
+je end
+
+left:
+push bp
+mov bp,sp
+push ax
+push bx
+push cx
+push si
+
+mov bx,[bp+6]
+mov cx,[bp+4]
+dec cx
+shl cx,1
+
+mainloop:
+mov si,0
+innerloop:mov ax,[bx+si]
+xchg ax,[bx+si+2]
+mov [bx+si],ax
+add si,2
+cmp si,cx
+jne innerloop
+pop si
+pop cx
+pop bx
+pop ax
+pop bp
+ret 4
+
+l2:
+mov ax,array
+push ax
+mov ax,[size]
+push ax
+call right
+add cx,1
+cmp cx,[rotation]
+jne l1
+je end
+
+right:
+push bp
+mov bp,sp
+push ax
+push bx
+push cx
+push si
+
+
+
+main:
+mov si,cx
+ inner:mov ax,[bx+si]
+xchg ax,[bx+si-2]
+mov [bx+si],ax
+sub si,2
+cmp si,0
+jae inner
+sub cx,2
+
+pop si
+pop cx
+pop bx
+pop ax
+pop bp
+ret 4
+
+end: mov ax, 0x4c00
+int 0x21
+
+array: dw 1,2,3,4
+size:dw 4
+direction:dw 0
+rotation :dw 1
