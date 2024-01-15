@@ -1,0 +1,13 @@
+[org 0x0100]  ;we will see org directive later
+
+mov ax,[num]
+add ax,[num+2]
+add ax,[num+4]
+add ax,[num+6]
+add ax,[num+8]
+mov [result],ax
+
+mov ax, 0x4c00 
+int 0x21
+num:dw 0,2,4,6,8
+result:dw 0
