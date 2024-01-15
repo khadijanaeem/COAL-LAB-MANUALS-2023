@@ -1,0 +1,118 @@
+[org 0x0100]
+jmp start
+
+clrscr:
+mov ax, 0xb800
+mov es,ax
+mov si,0
+next:
+mov word [es:si], 0x0720
+add si,2
+cmp si, 4000
+jne next
+ret
+print:
+
+	push es
+	push ax
+	push si
+	;push di
+call clrscr
+	mov ax, 0xb800
+	mov es, ax 
+	mov al ,' '
+mov ah,0x47
+mov cx,4
+nextchar: 
+	mov [es:di], ax 
+	add di, 2 
+loop nextchar
+	mov cx,4
+l1:
+	mov [es:di], ax 
+	add di, 160
+	loop l1
+mov cx,4
+l2:	
+	mov [es:di], ax 
+	sub di,2
+	loop l2
+mov cx,4
+l3:	
+	mov [es:di], ax 
+	sub di,160
+	loop l3
+
+	;pop di
+
+	pop si
+	pop ax
+	pop es
+	ret 2
+
+
+start:
+
+mov di,78
+push di
+call print
+
+	ll1:
+
+mov ah,0
+int 16h
+
+ cmp ah, 0x4b
+ je JmpLeft
+cmp ah, 0x48
+ je JmpUp
+ cmp ah, 0x50
+ je JmpDown
+ cmp ah, 0x4d
+ je JmpRight
+ 
+ 
+	JmpUp:
+cmp di,158   ; last col of first row
+jbe end1
+sub di, 160
+push di
+call print
+jmp ll1
+
+	JmpDown:
+add di, 160
+cmp di,3350    ; 4X4 rectangle cannot start after 75 col or 20 row
+ja end1
+push di
+call print
+jmp ll1
+
+
+	JmpRight:
+add di, 2
+cmp di,3350    ; 4 X 4 rectangle cannot startafter 75 col or 20 row
+ja end1
+push di
+call print
+jmp ll1
+
+	JmpLeft:
+cmp di,2
+jb end1
+sub di, 2
+
+mov ax,di
+mov bl,0xA0   ; if di is divisible by 160 it means that it is at the left most col(i.e 0th col) so terminate the program
+div bl
+jz end1
+
+
+push di
+call print
+jmp ll1
+
+
+end1:
+mov ax, 0x4c00
+int 0x21
