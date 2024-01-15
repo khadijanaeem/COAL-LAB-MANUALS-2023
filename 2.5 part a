@@ -1,0 +1,27 @@
+[org 0x0100]
+mov ax, 8
+mov bx,15
+mov cx,20
+cmp ax,bx
+jb label2         ; else 
+cmp ax,cx
+jb label1 
+sub ax,cx
+mov [result],ax
+jmp end
+label1: sub cx,ax
+mov [result] ,cx
+jmp end
+
+label2:  cmp bx,cx     ;else bahir wali ka else 
+jb label3
+sub bx,cx
+mov [result], bx
+jmp end
+label3: sub cx,bx
+mov [result] ,cx
+jmp end
+end: mov ax,0x4c00
+int 21h
+
+result : dw 0
