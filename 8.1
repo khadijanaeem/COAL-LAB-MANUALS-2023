@@ -1,0 +1,102 @@
+[org 0x0100]
+jmp start 
+
+
+InputString:dw  "ddsdfhgrtsdfhjghjksdd"
+length: dw 21
+CharToFind: db "d"
+CharToReplace: db "$"
+;arrs db 25 dup(0)
+
+clrscr: push es
+push ax
+push di
+mov ax, 0xb800
+mov es, ax ; point es to video base
+mov di, 0 ; point di to top left column
+nextloc: mov word [es:di], 0x0720 ; clear next char on screen
+add di, 2 ; move to next screen location
+cmp di, 4000 ; has the whole screen cleared
+jne nextloc ; if no clear next position
+pop di
+pop ax
+pop es
+ret
+
+
+printstr: push bp
+mov bp, sp
+push es
+push ax
+push cx
+push si
+push di
+mov ax, 0xb800
+mov es, ax ; point es to video base
+mov al, 80 ; load al with columns per row
+mul byte [bp+10] ; multiply with y position
+add ax, [bp+12] ; add x position
+shl ax, 1 ; turn into byte offset
+mov di,ax ; point di to required location
+mov si, [bp+6] ; point si to string
+mov cx, [bp+4] ; load length of string in cx
+mov ah, [bp+8] ; load attribute in ah
+
+nextchar: mov al, [si] ; load next char of string
+mov [es:di], ax ; show this char on screen
+add di, 2 ; move to next screen location
+add si, 1 ; move to next char in string
+loop nextchar ; repeat the operation cx times
+
+add di,140
+mov si, [bp+6] ; point si to string
+mov cx, [bp+4] 
+mov dl,[bp+16]  ; d
+mov bl,[bp+14]
+mov ah,0
+second:
+;mov ah, [bp+8]
+mov al,[si]
+cmp al, 100
+jne next
+mov al,bl
+next:
+mov ah,[bp+8]
+mov [es:di], ax ; show this char on screen
+add di, 2 ; move to next screen location
+add si, 1 ; move to next char in string
+mov ah,0
+loop second
+
+
+
+
+pop di
+pop si
+pop cx
+pop ax
+pop es
+pop bp
+ret 14
+
+
+start:
+ call clrscr ; call the clrscr subroutine
+ mov ax, CharToFind
+ push ax
+ mov ax,0x24
+ push ax
+ 
+mov ax, 40
+push ax ; push x position
+mov ax, 12
+push ax ; push y position
+mov ax, 32 ; blue on black attribute
+push ax ; push attribute
+mov ax, InputString
+push ax ; push address of message
+push word [length] ; push message length
+call printstr ; call the printstr subroutine
+
+mov ax, 0x4c00 ; terminate program
+int 0x21
