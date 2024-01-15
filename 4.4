@@ -1,0 +1,28 @@
+;extended subtraction
+[org 0x100]
+mov ax,[num1]
+mov bx,[num2]
+sub ax,bx
+mov [res],ax
+
+mov ax,[num1+2]
+mov bx,[num2+2]
+sbb ax,bx
+mov [res+2],ax
+
+mov ax,[num1+4]
+mov bx,[num2+4]
+sbb ax,bx
+mov [res+4],ax
+
+mov ax,[num1+6]
+mov bx,[num2+6]
+sbb ax,bx
+mov [res+6],ax
+
+mov ax, 0x4c00
+int 0x21
+num1: dq   0x880060FF4000FFFF    ;64 bit number  
+num2: dq    0x8F0F000040018000 
+res: dq 0
+ 
